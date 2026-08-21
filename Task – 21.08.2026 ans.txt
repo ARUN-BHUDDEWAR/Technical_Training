@@ -1,0 +1,138 @@
+Task – 21.08.2026
+Java
+1. Frog Jump
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int[] h = new int[n];
+
+        for (int i = 0; i < n; i++)
+            h[i] = sc.nextInt();
+
+        int[] dp = new int[n];
+
+        for (int i = 1; i < n; i++) {
+            int one = dp[i - 1] + Math.abs(h[i] - h[i - 1]);
+            int two = Integer.MAX_VALUE;
+
+            if (i > 1)
+                two = dp[i - 2] + Math.abs(h[i] - h[i - 2]);
+
+            dp[i] = Math.min(one, two);
+        }
+
+        System.out.println(dp[n - 1]);
+    }
+}
+2. Frog Jump with K Distances
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int k = sc.nextInt();
+
+        int[] h = new int[n];
+
+        for (int i = 0; i < n; i++)
+            h[i] = sc.nextInt();
+
+        int[] dp = new int[n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+
+        dp[0] = 0;
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j <= k && i - j >= 0; j++) {
+                dp[i] = Math.min(
+                    dp[i],
+                    dp[i - j] + Math.abs(h[i] - h[i - j])
+                );
+            }
+        }
+
+        System.out.println(dp[n - 1]);
+    }
+}
+SQL
+1. INNER JOIN
+SELECT e.emp_id, e.emp_name, d.dept_name, d.location
+FROM employees e
+INNER JOIN departments d
+ON e.dept_id = d.dept_id;
+2. LEFT JOIN
+SELECT e.emp_id, e.emp_name, d.dept_name
+FROM employees e
+LEFT JOIN departments d
+ON e.dept_id = d.dept_id;
+3. Departments With No Employees
+SELECT d.dept_id, d.dept_name
+FROM departments d
+LEFT JOIN employees e
+ON d.dept_id = e.dept_id
+WHERE e.emp_id IS NULL;
+4. Employee, Project, Department, Hours
+SELECT e.emp_name, p.project_name, d.dept_name, ep.hours
+FROM employees e
+JOIN employee_project ep
+ON e.emp_id = ep.emp_id
+JOIN projects p
+ON ep.project_id = p.project_id
+JOIN departments d
+ON e.dept_id = d.dept_id;
+5. All Projects and Employees
+SELECT p.project_id, p.project_name, e.emp_name
+FROM projects p
+LEFT JOIN employee_project ep
+ON p.project_id = ep.project_id
+LEFT JOIN employees e
+ON ep.emp_id = e.emp_id;
+6. Employee and Manager
+SELECT e.emp_name AS employee, m.emp_name AS manager
+FROM employees e
+LEFT JOIN employees m
+ON e.manager_id = m.emp_id;
+7. Employees With More Than One Project
+SELECT e.emp_id, e.emp_name, COUNT(ep.project_id) AS total_projects
+FROM employees e
+JOIN employee_project ep
+ON e.emp_id = ep.emp_id
+GROUP BY e.emp_id, e.emp_name
+HAVING COUNT(ep.project_id) > 1;
+8. Department Employee Count and Average Salary
+SELECT d.dept_name,
+       COUNT(e.emp_id) AS employee_count,
+       COALESCE(AVG(e.salary), 0) AS average_salary
+FROM departments d
+LEFT JOIN employees e
+ON d.dept_id = e.dept_id
+GROUP BY d.dept_id, d.dept_name;
+9. Employees Working on Other Department Projects
+SELECT e.emp_name,
+       ed.dept_name AS employee_department,
+       p.project_name,
+       pd.dept_name AS project_department
+FROM employees e
+JOIN employee_project ep
+ON e.emp_id = ep.emp_id
+JOIN projects p
+ON ep.project_id = p.project_id
+JOIN departments ed
+ON e.dept_id = ed.dept_id
+JOIN departments pd
+ON p.dept_id = pd.dept_id
+WHERE e.dept_id <> p.dept_id;
+10. Projects With No Employees
+SELECT p.project_id, p.project_name, d.dept_name, p.budget
+FROM projects p
+JOIN departments d
+ON p.dept_id = d.dept_id
+LEFT JOIN employee_project ep
+ON p.project_id = ep.project_id
+WHERE ep.emp_id IS NULL;
