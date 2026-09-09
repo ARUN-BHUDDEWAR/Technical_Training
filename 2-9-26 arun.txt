@@ -1,0 +1,173 @@
+public class Main {
+
+    static class Node {
+        int data;
+        Node left, right;
+
+        Node(int data) {
+            this.data = data;
+        }
+    }
+
+    static Node insert(Node root, int data) {
+        if (root == null)
+            return new Node(data);
+
+        if (data < root.data)
+            root.left = insert(root.left, data);
+        else
+            root.right = insert(root.right, data);
+
+        return root;
+    }
+
+    static Node delete(Node root, int key) {
+        if (root == null)
+            return null;
+
+        if (key < root.data)
+            root.left = delete(root.left, key);
+        else if (key > root.data)
+            root.right = delete(root.right, key);
+        else {
+            if (root.left == null)
+                return root.right;
+
+            if (root.right == null)
+                return root.left;
+
+            Node temp = root.right;
+
+            while (temp.left != null)
+                temp = temp.left;
+
+            root.data = temp.data;
+            root.right = delete(root.right, temp.data);
+        }
+
+        return root;
+    }
+
+    static boolean isBST(Node root) {
+        return checkBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    static boolean checkBST(Node root, long min, long max) {
+        if (root == null)
+            return true;
+
+        if (root.data <= min || root.data >= max)
+            return false;
+
+        return checkBST(root.left, min, root.data) &&
+               checkBST(root.right, root.data, max);
+    }
+
+    static int kthSmallest(Node root, int k) {
+        int[] count = {0};
+        int[] result = {-1};
+
+        findSmallest(root, k, count, result);
+
+        return result[0];
+    }
+
+    static void findSmallest(Node root, int k, int[] count, int[] result) {
+        if (root == null || result[0] != -1)
+            return;
+
+        findSmallest(root.left, k, count, result);
+
+        count[0]++;
+
+        if (count[0] == k) {
+            result[0] = root.data;
+            return;
+        }
+
+        findSmallest(root.right, k, count, result);
+    }
+
+    static int kthLargest(Node root, int k) {
+        int[] count = {0};
+        int[] result = {-1};
+
+        findLargest(root, k, count, result);
+
+        return result[0];
+    }
+
+    static void findLargest(Node root, int k, int[] count, int[] result) {
+        if (root == null || result[0] != -1)
+            return;
+
+        findLargest(root.right, k, count, result);
+
+        count[0]++;
+
+        if (count[0] == k) {
+            result[0] = root.data;
+            return;
+        }
+
+        findLargest(root.left, k, count, result);
+    }
+
+    static boolean isBalanced(Node root) {
+        return height(root) != -1;
+    }
+
+    static int height(Node root) {
+        if (root == null)
+            return 0;
+
+        int left = height(root.left);
+        if (left == -1)
+            return -1;
+
+        int right = height(root.right);
+        if (right == -1)
+            return -1;
+
+        if (Math.abs(left - right) > 1)
+            return -1;
+
+        return Math.max(left, right) + 1;
+    }
+
+    static void inorder(Node root) {
+        if (root == null)
+            return;
+
+        inorder(root.left);
+        System.out.print(root.data + " ");
+        inorder(root.right);
+    }
+
+    public static void main(String[] args) {
+        Node root = null;
+
+        root = insert(root, 50);
+        root = insert(root, 30);
+        root = insert(root, 70);
+        root = insert(root, 20);
+        root = insert(root, 40);
+        root = insert(root, 60);
+        root = insert(root, 80);
+
+        inorder(root);
+        System.out.println();
+
+        root = delete(root, 30);
+
+        inorder(root);
+        System.out.println();
+
+        System.out.println(isBST(root));
+
+        System.out.println(kthSmallest(root, 2));
+        System.out.println(kthLargest(root, 2));
+
+        System.out.println(isBalanced(root));
+    }
+}
