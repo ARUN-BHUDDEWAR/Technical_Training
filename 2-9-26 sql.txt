@@ -1,0 +1,93 @@
+-- 1
+SELECT emp_name, department, salary,
+       ROW_NUMBER() OVER (ORDER BY salary DESC) AS row_num
+FROM employees;
+
+
+-- 2
+SELECT emp_name, department, salary,
+       RANK() OVER (ORDER BY salary DESC) AS salary_rank
+FROM employees;
+
+
+-- 3
+SELECT emp_name, department, salary,
+       DENSE_RANK() OVER (ORDER BY salary DESC) AS salary_rank
+FROM employees;
+
+
+-- 4
+SELECT emp_name, department, salary,
+       ROW_NUMBER() OVER (
+           PARTITION BY department
+           ORDER BY salary DESC
+       ) AS row_num
+FROM employees;
+
+
+-- 5
+SELECT emp_name, department, salary,
+       RANK() OVER (
+           PARTITION BY department
+           ORDER BY salary DESC
+       ) AS salary_rank
+FROM employees;
+
+
+-- 6
+SELECT emp_name, department, salary
+FROM (
+    SELECT emp_name, department, salary,
+           DENSE_RANK() OVER (
+               PARTITION BY department
+               ORDER BY salary DESC
+           ) AS salary_rank
+    FROM employees
+) t
+WHERE salary_rank <= 2;
+
+
+-- 7
+SELECT emp_name, department, salary,
+       FIRST_VALUE(emp_name) OVER (
+           PARTITION BY department
+           ORDER BY salary DESC
+       ) AS highest_paid
+FROM employees;
+
+
+-- 8
+SELECT emp_name, department, salary,
+       LAST_VALUE(emp_name) OVER (
+           PARTITION BY department
+           ORDER BY salary DESC
+           ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+       ) AS lowest_paid
+FROM employees;
+
+
+-- 9
+SELECT emp_name, department, salary,
+       FIRST_VALUE(salary) OVER (
+           PARTITION BY department
+           ORDER BY salary DESC
+           ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+       ) AS highest_salary,
+       LAST_VALUE(salary) OVER (
+           PARTITION BY department
+           ORDER BY salary DESC
+           ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+       ) AS lowest_salary
+FROM employees;
+
+
+-- 10
+SELECT emp_name, department, salary
+FROM (
+    SELECT emp_name, department, salary,
+           DENSE_RANK() OVER (
+               ORDER BY salary DESC
+           ) AS salary_rank
+    FROM employees
+) t
+WHERE salary_rank = 2;
